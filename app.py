@@ -10,8 +10,8 @@ import random
 import re
 import os
 
-# --- PAGE CONFIGURATION ---
-st.set_page_config(page_title="Market Sentiment AI", layout="wide", page_icon="⚡")
+# --- PAGE CONFIGURATION (Browser Tab Name Fixed) ---
+st.set_page_config(page_title="Sentiment Analyzer", layout="wide", page_icon="⚡")
 
 # --- CUSTOM CSS ---
 st.markdown("""
@@ -65,31 +65,24 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- ROBUST KEY LOADING (LOCAL + CLOUD SUPPORT) ---
+# --- ROBUST KEY LOADING ---
 api_keys_str = None
-
-# 1. Try Loading from Streamlit Cloud Secrets (Production)
 try:
     if "GROQ_KEYS" in st.secrets:
         api_keys_str = st.secrets["GROQ_KEYS"]
-except:
-    pass
+except: pass
 
-# 2. If not found, try Loading from Local .env (Development)
 if not api_keys_str:
     try:
         from dotenv import load_dotenv
         load_dotenv()
         api_keys_str = os.getenv("GROQ_KEYS")
-    except:
-        pass
+    except: pass
 
-# 3. Final Check
 if not api_keys_str:
     st.error("🚨 System Error: API Keys not found! If on Cloud, add them to Secrets. If Local, add to .env.")
     st.stop()
 
-# Clean and Split Keys
 API_KEY_POOL = [key.strip() for key in api_keys_str.split(",") if key.strip()]
 
 # --- HELPERS ---
@@ -157,7 +150,7 @@ def generate_random_fallback(headlines_data):
         "random_score": random_score
     }
 
-# --- AI ENGINE (TRANSPARENCY MODE) ---
+# --- AI ENGINE ---
 def analyze_headlines(ticker, company_name, headlines_data):
     titles_only = [h['title'] for h in headlines_data]
 
@@ -208,11 +201,11 @@ def analyze_headlines(ticker, company_name, headlines_data):
 
     return generate_random_fallback(headlines_data), "Random"
 
-# --- UI LAYOUT ---
+# --- UI LAYOUT (MAIN TITLE FIXED) ---
 st.markdown('<div class="hero-title">Sentiment Analyzer</div>', unsafe_allow_html=True)
 st.markdown("""
 <div class="hero-subtitle">
-This is a Market Sentiment AI dashboard that scrapes real-time financial news for any stock ticker (or company name) and uses a Large Language Model (LLM) to analyze market mood. It automatically filters out irrelevant noise, classifies headlines as Bullish, Bearish, or Neutral, and calculates a weighted "Impact Score" (0–10) to provide a clear, data-driven sentiment verdict.
+This is a Sentiment Analyzer dashboard that scrapes real-time financial news for any stock ticker (or company name) and uses a Large Language Model (LLM) to analyze market mood. It automatically filters out irrelevant noise, classifies headlines as Bullish, Bearish, or Neutral, and calculates a weighted "Impact Score" (0–10) to provide a clear, data-driven sentiment verdict.
 </div>
 """, unsafe_allow_html=True)
 
@@ -355,7 +348,6 @@ if submitted and user_input:
                     style_class = ""
                     label = "Neutral"
 
-                # Apply styling for grayed out irrelevant news
                 title_html = f'<span class="{style_class}">{news["title"]}</span>'
                 
                 with st.expander(f"{icon} {news['title']}"):
